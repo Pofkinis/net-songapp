@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using SongsApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using SongsApp.Services.Interfaces;
@@ -19,6 +19,7 @@ public class AuthorController : ControllerBase
     [HttpGet("authors")]
     public async Task<ActionResult<IEnumerable<Author>>> Get()
     {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Ok(await _service.GetAllAuthors());
     }
     
@@ -42,12 +43,12 @@ public class AuthorController : ControllerBase
         
         return CreatedAtAction(nameof(Create), author);
     }
-    
-    [HttpPut("authors")]
-    public async Task<ActionResult<Author>> Update(Author author)
+
+    [HttpPut("authors/{id}")]
+    public async Task<ActionResult<Author>> Update(int id, AuthorUpdate author)
     {
-        var updatedAuthor = await _service.UpdateAuthor(author);
-        
+        var updatedAuthor = await _service.UpdateAuthor(id, author);
+
         if (updatedAuthor == null)
         {
             return NotFound();
@@ -55,7 +56,7 @@ public class AuthorController : ControllerBase
 
         return NoContent();
     }
-    
+
     [HttpDelete("authors")]
     public async Task<ActionResult<Author>> Delete(int id)
     {

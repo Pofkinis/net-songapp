@@ -12,6 +12,8 @@ public class DatabaseContext : DbContext
     public DbSet<Song> Songs { get; set; } = null!;
     public DbSet<Author> Authors { get; set; } = null!;
     public DbSet<Album> Albums { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<UserSong> UserSongs { get; set; } = null!;
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

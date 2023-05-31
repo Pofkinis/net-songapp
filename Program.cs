@@ -5,6 +5,10 @@ using SongsApp.Services;
 using SongsApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+using SongsApp.Repositories;
+using SongsApp.Repositories.Interfaces;
 using SongsApp.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +49,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters {
         ValidateIssuer = true,
@@ -63,9 +74,14 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseMySQL(connection);
 });
 
-builder.Services.AddTransient<IAuthorService, AuthorService>();
-builder.Services.AddTransient<IAlbumService, AlbumService>();
-builder.Services.AddTransient<ISongService, SongService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IAlbumService, AlbumService>();
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
+builder.Services.AddScoped<IKafkaService, KafkaService>();
 
 var app = builder.Build();
 

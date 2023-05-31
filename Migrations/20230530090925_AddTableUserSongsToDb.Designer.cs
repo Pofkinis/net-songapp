@@ -11,8 +11,8 @@ using SongsApp.Models;
 namespace SongsApp.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230327114418_Initial")]
-    partial class Initial
+    [Migration("20230530090925_AddTableUserSongsToDb")]
+    partial class AddTableUserSongsToDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,7 @@ namespace SongsApp.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Album");
+                    b.ToTable("Albums");
                 });
 
             modelBuilder.Entity("SongsApp.Models.Author", b =>
@@ -85,6 +85,46 @@ namespace SongsApp.Migrations
                     b.HasIndex("AlbumId");
 
                     b.ToTable("Songs");
+                });
+
+            modelBuilder.Entity("SongsApp.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SongsApp.Models.UserSong", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("SongId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSongs");
                 });
 
             modelBuilder.Entity("SongsApp.Models.Album", b =>

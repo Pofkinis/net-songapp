@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace SongsApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class CreateInitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,23 @@ namespace SongsApp.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Album",
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Username = table.Column<string>(type: "longtext", nullable: false),
+                    Password = table.Column<string>(type: "longtext", nullable: false),
+                    Role = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Albums",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -42,9 +58,9 @@ namespace SongsApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Album", x => x.Id);
+                    table.PrimaryKey("PK_Albums", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Album_Authors_AuthorId",
+                        name: "FK_Albums_Authors_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "Authors",
                         principalColumn: "Id",
@@ -66,17 +82,17 @@ namespace SongsApp.Migrations
                 {
                     table.PrimaryKey("PK_Songs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Songs_Album_AlbumId",
+                        name: "FK_Songs_Albums_AlbumId",
                         column: x => x.AlbumId,
-                        principalTable: "Album",
+                        principalTable: "Albums",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Album_AuthorId",
-                table: "Album",
+                name: "IX_Albums_AuthorId",
+                table: "Albums",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
@@ -92,7 +108,10 @@ namespace SongsApp.Migrations
                 name: "Songs");
 
             migrationBuilder.DropTable(
-                name: "Album");
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Albums");
 
             migrationBuilder.DropTable(
                 name: "Authors");

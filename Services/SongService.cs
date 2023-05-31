@@ -1,50 +1,67 @@
 using SongsApp.Models;
 using Microsoft.EntityFrameworkCore;
+using SongsApp.Repositories.Interfaces;
 using SongsApp.Services.Interfaces;
 
 namespace SongsApp.Services;
 
 public class SongService : ISongService
 {
-    private DatabaseContext _context;
+    private readonly ISongRepository _songRepository;
+    private readonly IAlbumRepository _albumRepository;
 
-    public SongService(DatabaseContext context)
+    public SongService(ISongRepository songRepository, IAlbumRepository albumRepository)
     {
-        _context = context;
+        _songRepository = songRepository;
+        _albumRepository = albumRepository;
     }
 
     public async Task<IEnumerable<Song>> GetAllSongs()
     {
-        return await _context.Songs.ToListAsync();
+        return await _songRepository.GetAll();
     }
 
-    public async Task<Song> GetById(int id)
+    public async Task<Song?> GetById(int id)
     {
-        return await _context.Songs.FirstOrDefaultAsync(x => x.Id == id);
+        return await _songRepository.GetById(id);
     }
 
-    public async Task<Song> CreateSong(Song song)
+    public async Task<Song> CreateSong(SongUpdate song)
     {
-        _context.Add(song);
-        await _context.SaveChangesAsync();
+        var album = await _albumRepository.GetById(song.AlbumId);
+        
+        if (album == null)
+        {
+            throw new Exception("Album does not exist");
+        }
 
-        return song;
+        var newSong = new Song
+        {
+            Title = song.Title,
+            Lenght = song.Lenght,
+            Album = album
+        };
+        
+        return await _songRepository.Insert(newSong);
     }
 
-    public async Task<Song> UpdateSong(Song song)
+    public async Task<int?> UpdateSong(int id, SongUpdate song)
     {
-        var songEntry = await GetById(song.Id);
+        var songEntry = await GetById(id);
 
         if (songEntry == null)
         {
             return null;
         }
+        
+        var author = await _albumRepository.GetById(song.AlbumId);
 
-        songEntry = song;
-        _context.Songs.Update(songEntry);
-        await _context.SaveChangesAsync();
+        if (author == null)
+        {
+            throw new Exception("Album does not exist");
+        }
 
-        return song;
+        return await _songRepository.Update(song, songEntry);
     }
 
     public async Task<bool> DeleteSong(int id)
@@ -56,9 +73,6 @@ public class SongService : ISongService
             return false;
         }
 
-        _context.Songs.Remove(songEntry);
-        var result = await _context.SaveChangesAsync();
-
-        return result > 0;
+        return await _songRepository.Delete(songEntry) > 0;
     }
 }

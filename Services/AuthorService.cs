@@ -1,51 +1,47 @@
+using System.Transactions;
 using SongsApp.Models;
 using Microsoft.EntityFrameworkCore;
+using SongsApp.Repositories.Interfaces;
 using SongsApp.Services.Interfaces;
 
 namespace SongsApp.Services;
 
 public class AuthorService : IAuthorService
 {
-    private DatabaseContext _context;
+    private readonly IAuthorRepository _authorRepository;
 
-    public AuthorService(DatabaseContext context)
+    public AuthorService(IAuthorRepository authorRepository)
     {
-        _context = context;
+        _authorRepository = authorRepository;
     }
 
     public async Task<IEnumerable<Author>> GetAllAuthors()
     {
-        return await _context.Authors.ToListAsync();
+        return await _authorRepository.GetAll();
     }
 
-    public async Task<Author> GetById(int id)
+    public async Task<Author?> GetById(int id)
     {
-        return await _context.Authors.FirstOrDefaultAsync(x => x.Id == id);
+        return await _authorRepository.GetById(id);
     }
 
     public async Task<Author> CreateAuthor(Author author)
     {
-        _context.Add(author);
-        await _context.SaveChangesAsync();
-
-        return author;
+        return await _authorRepository.Insert(author);
     }
 
-    public async Task<Author> UpdateAuthor(Author author)
+    public async Task<int?> UpdateAuthor(int id, AuthorUpdate author)
     {
-        var authorEntry = await GetById(author.Id);
-
+        var authorEntry = await GetById(id);
+        
         if (authorEntry == null)
         {
             return null;
         }
 
-        authorEntry = author;
-        _context.Authors.Update(authorEntry);
-        await _context.SaveChangesAsync();
-
-        return author;
+        return await _authorRepository.Update(author, authorEntry);
     }
+
 
     public async Task<bool> DeleteAuthor(int id)
     {
@@ -56,9 +52,6 @@ public class AuthorService : IAuthorService
             return false;
         }
 
-        _context.Authors.Remove(authorEntry);
-        var result = await _context.SaveChangesAsync();
-
-        return result > 0;
+        return await _authorRepository.Delete(authorEntry) > 0;
     }
 }

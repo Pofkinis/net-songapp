@@ -34,17 +34,17 @@ public class AlbumController : ControllerBase
     }
     
     [HttpPost("albums")]
-    public async Task<ActionResult<Album>> Create(Album album)
+    public async Task<ActionResult<Album>> Create(AlbumUpdate album)
     {
         await _service.CreateAlbum(album);
         
         return CreatedAtAction(nameof(Create), album);
     }
     
-    [HttpPut("albums")]
-    public async Task<ActionResult<Album>> Update(Album album)
+    [HttpPut("albums/{id}")]
+    public async Task<ActionResult<Album>> Update(int id, AlbumUpdate album)
     {
-        var updatedAlbum = await _service.UpdateAlbum(album);
+        var updatedAlbum = await _service.UpdateAlbum(id, album);
         
         if (updatedAlbum == null)
         {

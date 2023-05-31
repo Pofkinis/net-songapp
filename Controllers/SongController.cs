@@ -34,17 +34,17 @@ public class SongController : ControllerBase
     }
     
     [HttpPost("songs")]
-    public async Task<ActionResult<Song>> Create(Song song)
+    public async Task<ActionResult<Song>> Create(SongUpdate song)
     {
         await _service.CreateSong(song);
         
         return CreatedAtAction(nameof(Create), song);
     }
     
-    [HttpPut("songs")]
-    public async Task<ActionResult<Song>> Update(Song song)
+    [HttpPut("songs/{id}")]
+    public async Task<ActionResult<Song>> Update(int id, SongUpdate song)
     {
-        var updatedSong = await _service.UpdateSong(song);
+        var updatedSong = await _service.UpdateSong(id, song);
         
         if (updatedSong == null)
         {

@@ -6,11 +6,11 @@ public interface ISongService
 { 
      Task<IEnumerable<Song>> GetAllSongs();
      
-     Task<Song> GetById(int id);
+     Task<Song?> GetById(int id);
 
-     Task<Song> CreateSong(Song song);
+     Task<Song> CreateSong(SongUpdate song);
      
-     Task<Song> UpdateSong(Song song);
+     Task<int?> UpdateSong(int id, SongUpdate song);
 
      Task<bool> DeleteSong(int id);
 }
