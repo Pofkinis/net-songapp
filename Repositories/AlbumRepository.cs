@@ -15,12 +15,16 @@ public class AlbumRepository : IAlbumRepository
     
     public async Task<Album?> GetById(int id)
     {
-        return await _context.Albums.FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Albums
+            .Include(a => a.Author)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<IEnumerable<Album>> GetAll()
     {
-        return await _context.Albums.ToListAsync();
+        return await _context.Albums
+            .Include(a => a.Author)
+            .ToListAsync();
     }
 
     public async Task<Album> Insert(Album album)

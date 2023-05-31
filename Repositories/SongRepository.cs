@@ -15,12 +15,18 @@ public class SongRepository : ISongRepository
     
     public async Task<Song?> GetById(int id)
     {
-        return await _context.Songs.FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Songs
+            .Include(a => a.Album)
+            .ThenInclude(a => a.Author)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<IEnumerable<Song>> GetAll()
     {
-        return await _context.Songs.ToListAsync();
+        return await _context.Songs
+            .Include(a => a.Album)
+            .ThenInclude(a => a.Author)
+            .ToListAsync();
     }
 
     public async Task<Song> Insert(Song song)
