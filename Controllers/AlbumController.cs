@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using SongsApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using SongsApp.Services.Interfaces;
@@ -5,6 +6,7 @@ using SongsApp.Services.Interfaces;
 namespace SongsApp.Controllers;
 
 [ApiController]
+[Authorize]
 public class AlbumController : ControllerBase
 {
     private readonly IAlbumService _service;

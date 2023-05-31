@@ -1,12 +1,13 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using SongsApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using SongsApp.Services.Interfaces;
 
 namespace SongsApp.Controllers;
 
-[ApiController]
-//[Authorize]
+[ApiController] 
+[Authorize]
 public class AuthorController : ControllerBase
 {
     private readonly IAuthorService _service;

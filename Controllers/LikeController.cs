@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using Confluent.Kafka;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SongsApp.Services.Interfaces;
 
 namespace SongsApp.Controllers;
 
 [ApiController]
+[Authorize]
 public class LikeController : ControllerBase
 {
     private readonly IKafkaService _kafkaService;
